@@ -1,71 +1,97 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+
+// Define note type
+type Note = {
+  id: string;
+  content: string;
+};
 
 export default function Notes() {
-  // State for the note content
-  const [note, setNote] = useState<string>("");
+  const [notes, setNotes] = useState<Note[]>(() => {
+    const saved = localStorage.getItem("notes");
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  // State for an optional note title
-  const [title, setTitle] = useState<string>("");
+  const [newNote, setNewNote] = useState("");
 
-  // When the component loads (mounts), get any saved note and title from localStorage
+  // Save to localStorage on change
   useEffect(() => {
-    const savedNote = localStorage.getItem("note");
-    const savedTitle = localStorage.getItem("note-title");
+    localStorage.setItem("notes", JSON.stringify(notes));
+  }, [notes]);
 
-    if (savedNote) setNote(savedNote); // Set the saved note if it exists
-    if (savedTitle) setTitle(savedTitle); // Set the saved title if it exists
-  }, []);
+  // Add new note
+  function handleAddNote(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!newNote.trim()) return;
 
-  // Whenever the note or title changes, update localStorage to save them
-  useEffect(() => {
-    localStorage.setItem("note", note); // Save note text
-    localStorage.setItem("note-title", title); // Save title text
-  }, [note, title]); // This effect runs anytime `note` or `title` changes
+    setNotes((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), content: newNote.trim() },
+    ]);
+    setNewNote(""); // Clear textarea
+  }
 
-  // Clear both the note and title when the user confirms
-  function handleClear() {
-    if (confirm("Clear all notes?")) {
-      setNote(""); // Clear the note state
-      setTitle(""); // Clear the title state
-      localStorage.removeItem("note"); // Remove saved note from localStorage
-      localStorage.removeItem("note-title"); // Remove saved title from localStorage
+  // Update content of existing note
+  function handleNoteChange(id: string, value: string) {
+    setNotes((prev) =>
+      prev.map((note) =>
+        note.id === id ? { ...note, content: value } : note
+      )
+    );
+  }
+
+  // Delete a note
+  function handleDelete(id: string) {
+    if (confirm("Delete this note?")) {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
     }
   }
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      {/* Heading with emoji and title */}
-      <h1 className="flex items-center justify-center gap-2 text-2xl font-bold mb-6 text-gray-800">
-        <span role="img" aria-label="Notebook">🗒️</span>
-        Notes
-      </h1>
+      <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">🗒️ Notes</h1>
 
-      {/* Input field for the note title */}
-      <input
-        type="text"
-        value={title} // Controlled input
-        onChange={(e) => setTitle(e.target.value)} // Update title state
-        placeholder="Note title..."
-        className="w-full mb-3 border border-gray-400 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-
-      {/* Textarea for the actual note content */}
-      <textarea
-        value={note} // Controlled textarea
-        onChange={(e) => setNote(e.target.value)} // Update note state
-        placeholder="Write notes about your tasks here..."
-        className="w-full h-64 p-4 border border-gray-300 rounded-lg shadow resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800"
-      />
-
-      {/* Bottom bar with character count and clear button */}
-      <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
-        <span>{note.length} characters</span> {/* Live character count */}
+      <form onSubmit={handleAddNote} className="mb-4">
+        <textarea
+          value={newNote}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            setNewNote(e.target.value)
+          }
+          className="w-full p-4 border rounded resize-none px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Write a new note..."
+        />
         <button
-          onClick={handleClear}
-          className="text-red-500 hover:underline"
+          type="submit"
+          className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
         >
-          Clear note
+          Add Note
         </button>
+      </form>
+
+      <div className="space-y-4">
+        {notes.length === 0 && (
+          <p className="text-center text-gray-500">No notes yet.</p>
+        )}
+        {notes.map((note) => (
+          <div
+            key={note.id}
+            className="relative bg-white border border-gray-300 rounded-lg shadow"
+          >
+            <textarea
+              value={note.content}
+              onChange={(e) => handleNoteChange(note.id, e.target.value)}
+              className="w-full p-4 resize-none focus:outline-none rounded-lg"
+              rows={4}
+            />
+            <button
+              onClick={() => handleDelete(note.id)}
+              className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+              aria-label="Delete note"
+            >
+              🗑️
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

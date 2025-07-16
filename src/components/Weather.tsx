@@ -64,7 +64,7 @@ export default function WeatherFeed() {
         Weather
     </h1>
     <div className="max-w-md mx-auto p-6 bg-black rounded shadow-md text-center">
-      <h3 className="text-white font-bold mb-4">Weather in {city}</h3>
+      <h3 className="text-white font-bold mb-4">Weather in <span className="text-yellow-500">{city}</span></h3>
 
       {loading && <p className="text-white">Loading weather...</p>}
 

@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import Slider from "react-slick";
 
+const apiKey = import.meta.env.VITE_REACT_APP_YOUTUBE_API_KEY;
 const PLAYLIST_URL =
   "https://www.googleapis.com/youtube/v3/playlistItems?" +
   new URLSearchParams({
     part: "snippet",
     maxResults: "5",
     playlistId: "PLVgXhkNS8506UC_M2N_tEMvRfQ2GJvuwd",
-    key: "AIzaSyBWpi6_1fqENy_fVZKU0pnZ222kLm7YOCY",
+    key: apiKey,
   }).toString();
 
 export function YouTubeFeed() {
