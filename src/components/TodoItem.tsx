@@ -1,4 +1,5 @@
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
 // This defines the shape of a single to-do item
 type ToDo = {
