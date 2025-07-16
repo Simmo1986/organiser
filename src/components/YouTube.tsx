@@ -13,7 +13,7 @@ const PLAYLIST_URL =
 
 export function YouTubeFeed() {
   const [videos, setVideos] = useState<{ id: string; title: string }[]>([]);
-  const sliderRef = useRef<Slider>(null);
+  const sliderRef = useRef<any>(null);
   const playerRefs = useRef<(HTMLIFrameElement | null)[]>([]);
   const currentIndexRef = useRef<number>(0);
 
@@ -92,7 +92,7 @@ export function YouTubeFeed() {
         {videos.map((v, i) => (
           <div key={v.id} className="px-2">
             <iframe
-              ref={(el) => (playerRefs.current[i] = el)}
+              ref={(el) => { playerRefs.current[i] = el; }}
               width="100%"
               height="200"
               src={`https://www.youtube.com/embed/${v.id}?enablejsapi=1`}
