@@ -6,8 +6,8 @@ const PLAYLIST_URL =
   "https://www.googleapis.com/youtube/v3/playlistItems?" +
   new URLSearchParams({
     part: "snippet",
-    maxResults: "5",
-    playlistId: "PLVgXhkNS8506UC_M2N_tEMvRfQ2GJvuwd",
+    maxResults: "15",
+    playlistId: "PLVgXhkNS8507Otbhw6Q-ykMb5bEWLvlPH",
     key: apiKey,
   }).toString();
 
@@ -97,7 +97,6 @@ export function YouTubeFeed() {
               height="200"
               src={`https://www.youtube.com/embed/${v.id}?enablejsapi=1`}
               title={v.title}
-              allow="autoplay; encrypted-media"
               allowFullScreen
               className="rounded-lg shadow"
             />
